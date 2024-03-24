@@ -1041,6 +1041,8 @@ function zvm_yank() {
     CUTBUFFER=${CUTBUFFER}$'\n'
   fi
   CURSOR=$bpos MARK=$epos
+
+  printf "%s" "${CUTBUFFER}" | zsh-system-clipboard-set
 }
 
 # Up case of the visual selection
@@ -1085,6 +1087,7 @@ function zvm_vi_yank() {
 
 # Put cutbuffer after the cursor
 function zvm_vi_put_after() {
+  CUTBUFFER="$(zsh-system-clipboard-get)"
   local head= foot=
   local content=${CUTBUFFER}
   local offset=1
@@ -1137,6 +1140,7 @@ function zvm_vi_put_after() {
 
 # Put cutbuffer before the cursor
 function zvm_vi_put_before() {
+  CUTBUFFER="$(zsh-system-clipboard-get)"
   local head= foot=
   local content=${CUTBUFFER}
 
@@ -1201,6 +1205,8 @@ function zvm_replace_selection() {
 
   BUFFER="${BUFFER:0:$bpos}${cutbuf}${BUFFER:$epos}"
   CURSOR=$cpos
+
+  printf "%s" "${CUTBUFFER}" | zsh-system-clipboard-set
 }
 
 # Replace characters of the visual selection
@@ -1256,6 +1262,8 @@ function zvm_vi_change() {
 
   zvm_exit_visual_mode false
   zvm_select_vi_mode $ZVM_MODE_INSERT ${1:-true}
+
+  printf "%s" "${CUTBUFFER}" | zsh-system-clipboard-set
 }
 
 # Change characters from cursor to the end of current line
@@ -1274,6 +1282,8 @@ function zvm_vi_change_eol() {
 
   zvm_reset_repeat_commands $ZVM_MODE c 0 $#CUTBUFFER
   zvm_select_vi_mode $ZVM_MODE_INSERT
+
+  printf "%s" "${CUTBUFFER}" | zsh-system-clipboard-set
 }
 
 # Default handler for unhandled key events
@@ -3709,4 +3719,3 @@ case $ZVM_INIT_MODE in
   sourcing) zvm_init;;
   *) precmd_functions+=(zvm_init);;
 esac
-
